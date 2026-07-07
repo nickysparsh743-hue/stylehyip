@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const initialSettings = {
@@ -13,19 +13,24 @@ const initialSettings = {
 
 export default function AdminSettingsPage() {
     const { push } = useToast();
-    const [settings, setSettings] = useState(initialSettings);
+    const [settings, setSettings] = useState(() => {
+        if (typeof window === 'undefined') {
+            return initialSettings;
+        }
+
+        const stored = window.localStorage.getItem('stylehyip-settings');
+        if (!stored) {
+            return initialSettings;
+        }
+
+        try {
+            return JSON.parse(stored);
+        } catch {
+            return initialSettings;
+        }
+    });
     const [isSaving, setIsSaving] = useState(false);
 
-    useEffect(() => {
-        const stored = window.localStorage.getItem('stylehyip-settings');
-        if (stored) {
-            try {
-                setSettings(JSON.parse(stored));
-            } catch {
-                setSettings(initialSettings);
-            }
-        }
-    }, []);
 
     const handleSave = (event) => {
         event.preventDefault();

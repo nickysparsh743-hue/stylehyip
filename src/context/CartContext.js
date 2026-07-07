@@ -5,20 +5,23 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-    const [items, setItems] = useState([]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
+    const [items, setItems] = useState(() => {
+        if (typeof window === 'undefined') {
+            return [];
+        }
 
         const saved = window.localStorage.getItem('stylehyip-cart');
-        if (saved) {
-            try {
-                setItems(JSON.parse(saved));
-            } catch (error) {
-                console.error('Failed to parse cart data', error);
-            }
+        if (!saved) {
+            return [];
         }
-    }, []);
+
+        try {
+            return JSON.parse(saved);
+        } catch (error) {
+            console.error('Failed to parse cart data', error);
+            return [];
+        }
+    });
 
     useEffect(() => {
         if (typeof window === 'undefined') return;

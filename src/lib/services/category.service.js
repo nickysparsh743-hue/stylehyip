@@ -12,9 +12,10 @@ export async function getCategories() {
   return data || [];
 }
 
-export async function createCategory({ name, slug, description }) {
+export async function createCategory(payload = {}) {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('categories').insert({ name, slug, description }).select('*').single();
+  const { name, slug, description, background_image_url } = payload;
+  const { data, error } = await supabase.from('categories').insert({ name, slug, description, background_image_url }).select('*').single();
 
   if (error) {
     throw error;
@@ -23,9 +24,9 @@ export async function createCategory({ name, slug, description }) {
   return data;
 }
 
-export async function updateCategory(id, { name, slug, description }) {
+export async function updateCategory(id, payload = {}) {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('categories').update({ name, slug, description }).eq('id', id).select('*').single();
+  const { data, error } = await supabase.from('categories').update(payload).eq('id', id).select('*').single();
 
   if (error) {
     throw error;
@@ -35,8 +36,21 @@ export async function updateCategory(id, { name, slug, description }) {
 }
 
 export async function deleteCategory(id) {
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.from('categories').delete().eq('id', id);
+  const supabase = createSupabaseAdminClient();
+  const { data: linkedProducts, error: lookupError } = await supabase.from('products').select('id').eq('category_id', id).limit(1);
+
+  if (lookupError) {
+    throw lookupError;
+  }
+
+  if ((linkedProducts || []).length > 0) {
+    const error = new Error('This category still has products assigned. Move or remove them first.');
+    error.code = 'CATEGORY_HAS_PRODUCTS';
+    throw error;
+  }
+
+  const serverClient = await createSupabaseServerClient();
+  const { error } = await serverClient.from('categories').delete().eq('id', id);
 
   if (error) {
     throw error;
