@@ -1,0 +1,130 @@
+export const siteConfig = {
+    name: 'Step Into Style',
+    tagline: 'Step Into Style, carry with confidence.',
+    deliveryDays: '1-3',
+    returnDays: '7',
+    mpesaPaybill: '123456',
+    mpesaAccount: 'STEPSTYLE',
+};
+
+export const categories = [
+    {
+        id: 'sneakers',
+        name: 'Sneakers',
+        description: 'Premium athletic and lifestyle sneakers for every move.',
+        image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80',
+        slug: 'sneakers',
+    },
+    {
+        id: 'handbags',
+        name: 'Handbags',
+        description: 'Structured and statement bags for work, travel, and weekends.',
+        image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80',
+        slug: 'handbags',
+    },
+    {
+        id: 'men',
+        name: 'Men',
+        description: 'Smart essentials and elevated casualwear for modern men.',
+        image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80',
+        slug: 'men',
+    },
+    {
+        id: 'women',
+        name: 'Women',
+        description: 'Elegant staples with a bold, confident finish.',
+        image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=80',
+        slug: 'women',
+    },
+];
+
+export const products = [
+    {
+        id: 'nova-sneaker',
+        name: 'Nova Runner',
+        description: 'Lightweight comfort with sculpted cushioning for everyday wear.',
+        price: 6200,
+        category: 'sneakers',
+        slug: 'nova-runner',
+        image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=900&q=80',
+        badge: 'New Arrival',
+        stock: 12,
+        rating: 5,
+        reviews: 128,
+    },
+    {
+        id: 'kenya-bag',
+        name: 'Nairobi Tote',
+        description: 'A refined tote made for city days and weekend escapes.',
+        price: 7400,
+        category: 'handbags',
+        slug: 'nairobi-tote',
+        image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=80',
+        badge: 'Best Seller',
+        stock: 8,
+        rating: 4,
+        reviews: 96,
+    },
+    {
+        id: 'urban-oxford',
+        name: 'Urban Oxford',
+        description: 'Tailored detailing paired with a relaxed everyday silhouette.',
+        price: 8900,
+        category: 'men',
+        slug: 'urban-oxford',
+        image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=900&q=80',
+        badge: 'Featured',
+        stock: 6,
+        rating: 4,
+        reviews: 74,
+    },
+    {
+        id: 'luna-dress',
+        name: 'Luna Dress',
+        description: 'Elevated drape and polished movement for evening occasions.',
+        price: 9600,
+        category: 'women',
+        slug: 'luna-dress',
+        image: 'https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80',
+        badge: 'New Arrival',
+        stock: 5,
+        rating: 5,
+        reviews: 58,
+    },
+    {
+        id: 'glow-watch',
+        name: 'Glow Watch',
+        description: 'Minimal design with premium finishes for everyday confidence.',
+        price: 5400,
+        category: 'accessories',
+        slug: 'glow-watch',
+        image: 'https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80',
+        badge: 'Trending',
+        stock: 10,
+        rating: 4,
+        reviews: 113,
+    },
+    {
+        id: 'city-sneaker',
+        name: 'City Court',
+        description: 'Clean lines, breathable comfort, and all-day support.',
+        price: 6900,
+        category: 'sneakers',
+        slug: 'city-court',
+        image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=900&q=80',
+        badge: 'Best Seller',
+        stock: 9,
+        rating: 5,
+        reviews: 142,
+    },
+];
+
+export const featuredProducts = products.filter((product) => product.badge === 'Best Seller' || product.badge === 'Featured').slice(0, 4);
+
+export function formatCurrency(value) {
+    return new Intl.NumberFormat('en-KE', {
+        style: 'currency',
+        currency: 'KES',
+        maximumFractionDigits: 0,
+    }).format(value);
+}
