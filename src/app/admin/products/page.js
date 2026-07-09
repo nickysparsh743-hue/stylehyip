@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -168,7 +169,7 @@ export default function AdminProductsPage() {
                     {form.image_url ? (
                         <div className="md:col-span-2 rounded-[1.5rem] border border-stone-200 bg-stone-50 p-4">
                             <p className="mb-2 text-sm font-semibold text-stone-700">Preview</p>
-                            <img src={form.image_url} alt="Product preview" className="h-40 w-full rounded-2xl object-cover" />
+                            <Image src={form.image_url} alt="Product preview" width={1200} height={800} className="h-40 w-full rounded-2xl object-cover" />
                         </div>
                     ) : null}
                     <div className="flex flex-wrap gap-3 md:col-span-2">

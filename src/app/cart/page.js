@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { formatCurrency } from '@/lib/store-data';
@@ -35,7 +36,7 @@ export default function CartPage() {
                 <div className="space-y-4">
                     {items.map((item) => (
                         <div key={item.id} className="flex flex-col gap-4 rounded-[1.5rem] border border-stone-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center">
-                            <img src={item.image} alt={item.name} className="h-28 w-full rounded-2xl object-cover sm:w-28" />
+                            <Image src={item.image} alt={item.name} width={400} height={400} className="h-28 w-full rounded-2xl object-cover sm:w-28" />
                             <div className="flex-1">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>

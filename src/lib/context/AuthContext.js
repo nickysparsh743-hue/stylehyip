@@ -83,7 +83,7 @@ export function AuthProvider({ children }) {
         return { error: new Error('Public registration is disabled. Please sign in with an invitation from the store admin.') };
     };
 
-    const signIn = async ({ email, password }) => {
+    const signIn = useCallback(async ({ email, password }) => {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error || !data?.user) {
             return { data, error };
@@ -92,22 +92,22 @@ export function AuthProvider({ children }) {
         setUser(data.user);
         const nextProfile = await loadProfile(data.user.id, data.user.user_metadata?.role);
         return { data, error, profile: nextProfile };
-    };
+    }, [loadProfile, supabase]);
 
-    const signOut = async () => {
+    const signOut = useCallback(async () => {
         await supabase.auth.signOut();
         setUser(null);
         setProfile(null);
         setRole(null);
-    };
+    }, [supabase]);
 
-    const refreshProfile = async (userId = user?.id) => {
+    const refreshProfile = useCallback(async (userId = user?.id) => {
         return loadProfile(userId);
-    };
+    }, [loadProfile, user?.id]);
 
     const value = useMemo(
         () => ({ user, profile, role, loading, signUp, signIn, signOut, supabase, refreshProfile }),
-        [user, profile, role, loading, supabase, refreshProfile]
+        [user, profile, role, loading, signIn, signOut, supabase, refreshProfile]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

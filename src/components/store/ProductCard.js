@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import AddToCartButton from './AddToCartButton';
 import { formatCurrency } from '@/lib/store-data';
@@ -8,7 +9,7 @@ export default function ProductCard({ product }) {
     return (
         <article className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-white shadow-sm">
             <Link href={`/product/${product.slug}`} className="block">
-                <img src={product.image} alt={product.name} className="h-60 w-full object-cover" />
+                <Image src={product.image} alt={product.name} width={800} height={800} className="h-60 w-full object-cover" />
             </Link>
             <div className="space-y-4 p-6">
                 <div className="flex items-center justify-between gap-3">

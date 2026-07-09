@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
 
@@ -133,7 +134,7 @@ export default function AdminCategoriesPage() {
                     {form.background_image_url ? (
                         <div className="md:col-span-2 rounded-[1.5rem] border border-stone-200 bg-white p-4">
                             <p className="mb-2 text-sm font-semibold text-stone-700">Preview</p>
-                            <img src={form.background_image_url} alt="Category preview" className="h-40 w-full rounded-2xl object-cover" />
+                            <Image src={form.background_image_url} alt="Category preview" width={1200} height={800} className="h-40 w-full rounded-2xl object-cover" />
                         </div>
                     ) : null}
                     <div className="md:col-span-2 flex flex-wrap gap-3">
@@ -152,7 +153,7 @@ export default function AdminCategoriesPage() {
                     {categories.map((category) => (
                         <div key={category.id} className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
                             {category.background_image_url ? (
-                                <img src={category.background_image_url} alt={category.name} className="mb-4 h-32 w-full rounded-[1.25rem] object-cover" />
+                                <Image src={category.background_image_url} alt={category.name} width={1200} height={800} className="mb-4 h-32 w-full rounded-[1.25rem] object-cover" />
                             ) : null}
                             <h2 className="text-lg font-semibold text-stone-900">{category.name}</h2>
                             <p className="mt-2 text-sm text-stone-600">{category.description}</p>

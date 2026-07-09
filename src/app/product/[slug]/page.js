@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import AddToCartButton from '@/components/store/AddToCartButton';
 import { formatCurrency, products } from '@/lib/store-data';
@@ -23,7 +24,7 @@ export default function ProductDetailPage({ params }) {
 
     return (
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
-            <img src={product.image} alt={product.name} className="h-[480px] w-full rounded-[2rem] object-cover" />
+            <Image src={product.image} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
             <div className="space-y-6">
                 <div className="space-y-3">
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">{product.badge}</p>

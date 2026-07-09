@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import ProductCard from '@/components/store/ProductCard';
 import { getCategories } from '@/lib/services/category.service';
@@ -38,7 +39,7 @@ export default async function HomePage() {
           </div>
 
           <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-stone-50 p-4 shadow-sm">
-            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" className="h-[420px] w-full rounded-[1.5rem] object-cover" />
+            <Image src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" width={1200} height={900} priority className="h-[420px] w-full rounded-[1.5rem] object-cover" />
           </div>
         </div>
       </section>
@@ -105,7 +106,7 @@ export default async function HomePage() {
             <Link href="/products" className="mt-6 inline-flex rounded-full bg-amber-400 px-5 py-3 text-sm font-semibold text-stone-950">Shop now</Link>
           </div>
           <div className="overflow-hidden rounded-[1.5rem]">
-            <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="New arrivals" className="h-[260px] w-full rounded-[1.5rem] object-cover" />
+            <Image src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="New arrivals" width={1200} height={800} className="h-[260px] w-full rounded-[1.5rem] object-cover" />
           </div>
         </div>
       </section>
