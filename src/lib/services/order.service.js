@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from '../supabase/server';
+import { createSupabaseAdminClient } from '../supabase/admin';
 
 export async function createOrder({ userId = null, name, phone, address, items = [], subtotal, notes = '' }) {
     if (!items.length) {
@@ -6,7 +7,7 @@ export async function createOrder({ userId = null, name, phone, address, items =
     }
 
     const total = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0);
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabaseAdminClient();
 
     const { data: order, error: orderError } = await supabase
         .from('orders')
