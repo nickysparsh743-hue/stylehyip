@@ -1,14 +1,23 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import ShareButton from '@/components/shared/ShareButton';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import AddToCartButton from '@/components/store/AddToCartButton';
-import { formatCurrency, products } from '@/lib/store-data';
+import { formatCurrency } from '@/lib/store-data';
+import { getProducts, getProductBySlug } from '@/lib/services/product.service';
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+    const products = await getProducts({ limit: 100 });
     return products.map((product) => ({ slug: product.slug }));
 }
 
-export default function ProductDetailPage({ params }) {
-    const product = products.find((item) => item.slug === params.slug);
+export default async function ProductDetailPage({ params }) {
+    let product;
+
+    try {
+        product = await getProductBySlug(params.slug);
+    } catch {
+        product = null;
+    }
 
     if (!product) {
         return (
@@ -24,10 +33,13 @@ export default function ProductDetailPage({ params }) {
 
     return (
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
-            <Image src={product.image} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
+            <ResponsiveImage src={product.image} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
             <div className="space-y-6">
                 <div className="space-y-3">
-                    <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">{product.badge}</p>
+                    <div className="flex items-start justify-between gap-3">
+                        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">{product.badge}</p>
+                        <ShareButton type="product" title={product.name} slug={product.slug} />
+                    </div>
                     <h1 className="text-4xl font-semibold text-stone-900">{product.name}</h1>
                     <p className="text-lg leading-8 text-stone-600">{product.description}</p>
                 </div>

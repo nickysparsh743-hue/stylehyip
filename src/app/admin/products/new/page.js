@@ -3,12 +3,16 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
+import ImageUploader from '@/components/ui/ImageUploader';
+import { uploadProductImage } from '@/lib/supabase/storage';
 
 export default function NewProductPage() {
     const { push } = useToast();
     const [categories, setCategories] = useState([]);
     const [form, setForm] = useState({ name: '', slug: '', description: '', price: '0', stock: '0', category_id: '', image_url: '', is_featured: false });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [imageError, setImageError] = useState(null);
 
     useEffect(() => {
         async function loadCategories() {
@@ -21,6 +25,20 @@ export default function NewProductPage() {
 
         loadCategories();
     }, []);
+
+    async function handleImageUpload(file) {
+        setImageError(null);
+        setIsUploadingImage(true);
+
+        try {
+            const { publicUrl } = await uploadProductImage(file);
+            setForm((prev) => ({ ...prev, image_url: publicUrl }));
+        } catch (error) {
+            setImageError(error.message || 'Failed to upload image');
+        } finally {
+            setIsUploadingImage(false);
+        }
+    }
 
     async function onSubmit(event) {
         event.preventDefault();
@@ -62,7 +80,28 @@ export default function NewProductPage() {
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Slug" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Price" type="number" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Stock" type="number" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} required />
-                    <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Image URL" value={form.image_url} onChange={(event) => setForm({ ...form, image_url: event.target.value })} />
+                    <div className="space-y-3">
+                        <ImageUploader
+                            label="Product image"
+                            previewUrl={form.image_url}
+                            onImageUpload={handleImageUpload}
+                            isUploading={isUploadingImage}
+                            error={imageError}
+                        />
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                            <label className="mb-2 block text-sm font-semibold text-stone-800">Or paste an image URL</label>
+                            <input
+                                value={form.image_url}
+                                onChange={(event) => {
+                                    setImageError(null);
+                                    setForm({ ...form, image_url: event.target.value });
+                                }}
+                                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3"
+                                placeholder="https://example.com/image.jpg"
+                            />
+                            <p className="mt-2 text-xs text-stone-500">Upload a file or paste a direct image link from any website.</p>
+                        </div>
+                    </div>
                     <select value={form.category_id} onChange={(event) => setForm({ ...form, category_id: event.target.value })} className="w-full rounded-2xl border border-stone-300 px-4 py-3">
                         <option value="">Select Category</option>
                         {categories.map((category) => (

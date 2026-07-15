@@ -1,6 +1,7 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import ProductCard from '@/components/store/ProductCard';
+import CategoryCard from '@/components/store/CategoryCard';
 import { getCategories } from '@/lib/services/category.service';
 import { getProducts } from '@/lib/services/product.service';
 import { siteConfig } from '@/lib/store-data';
@@ -39,7 +40,7 @@ export default async function HomePage() {
           </div>
 
           <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-stone-50 p-4 shadow-sm">
-            <Image src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" width={1200} height={900} priority className="h-[420px] w-full rounded-[1.5rem] object-cover" />
+            <ResponsiveImage src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" width={1200} height={900} priority className="h-[420px] w-full rounded-[1.5rem] object-cover" />
           </div>
         </div>
       </section>
@@ -68,14 +69,9 @@ export default async function HomePage() {
             View all <span className="ml-1">→</span>
           </Link>
         </div>
-        <div className="grid gap-4 md:grid-cols-5">
+        <div className="grid gap-3 sm:gap-4 grid-cols-4 sm:grid-cols-4 md:grid-cols-5">
           {categories.map((category) => (
-            <Link key={category.id} href={`/categories/${category.slug}`} className="overflow-hidden rounded-[1.25rem] border border-stone-200 bg-white shadow-sm">
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-stone-900">{category.name}</h3>
-                <p className="mt-1 text-sm leading-6 text-stone-600">{category.description}</p>
-              </div>
-            </Link>
+            <CategoryCard key={category.id} category={category} />
           ))}
         </div>
       </section>
@@ -90,7 +86,7 @@ export default async function HomePage() {
             View all <span className="ml-1">→</span>
           </Link>
         </div>
-        <div className="grid gap-6 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-3 sm:grid-cols-3 lg:grid-cols-4">
           {featuredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -106,7 +102,7 @@ export default async function HomePage() {
             <Link href="/products" className="mt-6 inline-flex rounded-full bg-amber-400 px-5 py-3 text-sm font-semibold text-stone-950">Shop now</Link>
           </div>
           <div className="overflow-hidden rounded-[1.5rem]">
-            <Image src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="New arrivals" width={1200} height={800} className="h-[260px] w-full rounded-[1.5rem] object-cover" />
+            <ResponsiveImage src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="New arrivals" width={1200} height={800} className="h-[260px] w-full rounded-[1.5rem] object-cover" />
           </div>
         </div>
       </section>

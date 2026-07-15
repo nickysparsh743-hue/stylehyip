@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 
 export default function AboutPage() {
     return (
@@ -16,7 +16,7 @@ export default function AboutPage() {
                     </Link>
                 </div>
                 <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
-                    <Image src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="Fashion styling" width={1200} height={900} className="h-[360px] w-full object-cover" />
+                    <ResponsiveImage src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80" alt="Fashion styling" width={1200} height={900} className="h-[360px] w-full object-cover" />
                 </div>
             </div>
         </div>

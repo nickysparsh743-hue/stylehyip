@@ -63,7 +63,7 @@ export default function ShopPage() {
             {isLoading ? (
                 <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-8 text-sm text-stone-600">Loading products…</div>
             ) : (
-                <div className="grid gap-6 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-3 sm:grid-cols-3 lg:grid-cols-4">
                     {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}

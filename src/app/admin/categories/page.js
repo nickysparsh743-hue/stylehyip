@@ -1,8 +1,10 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
+import ImageUploader from '@/components/ui/ImageUploader';
+import { uploadCategoryImage, deleteStorageFile, getStorageFilePathFromUrl } from '@/lib/supabase/storage';
 
 const emptyForm = {
     name: '',
@@ -18,6 +20,9 @@ export default function AdminCategoriesPage() {
     const [editingCategoryId, setEditingCategoryId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [busyCategoryId, setBusyCategoryId] = useState(null);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
+    const [imageError, setImageError] = useState(null);
+    const [oldImagePath, setOldImagePath] = useState(null);
 
     async function loadCategories() {
         const response = await fetch('/api/categories');
@@ -39,6 +44,8 @@ export default function AdminCategoriesPage() {
     function resetForm() {
         setEditingCategoryId(null);
         setForm(emptyForm);
+        setOldImagePath(null);
+        setImageError(null);
     }
 
     function startEdit(category) {
@@ -49,6 +56,31 @@ export default function AdminCategoriesPage() {
             description: category.description || '',
             background_image_url: category.background_image_url || '',
         });
+        setOldImagePath(category.background_image_url ? getStorageFilePathFromUrl(category.background_image_url) : null);
+    }
+
+    async function handleImageUpload(file) {
+        setImageError(null);
+        setIsUploadingImage(true);
+
+        try {
+            const { publicUrl, path } = await uploadCategoryImage(file);
+
+            if (oldImagePath) {
+                try {
+                    await deleteStorageFile(oldImagePath);
+                } catch (deleteError) {
+                    console.warn('Failed to delete old image:', deleteError);
+                }
+            }
+
+            setForm((prev) => ({ ...prev, background_image_url: publicUrl }));
+            setOldImagePath(path);
+        } catch (error) {
+            setImageError(error.message || 'Failed to upload image');
+        } finally {
+            setIsUploadingImage(false);
+        }
     }
 
     async function onSubmit(event) {
@@ -128,15 +160,27 @@ export default function AdminCategoriesPage() {
                         <textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} rows={3} className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3" />
                     </div>
                     <div className="md:col-span-2">
-                        <label className="mb-2 block text-sm font-semibold text-stone-800">Background image URL</label>
-                        <input value={form.background_image_url} onChange={(event) => setForm({ ...form, background_image_url: event.target.value })} className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3" placeholder="https://example.com/banner.jpg" />
-                    </div>
-                    {form.background_image_url ? (
-                        <div className="md:col-span-2 rounded-[1.5rem] border border-stone-200 bg-white p-4">
-                            <p className="mb-2 text-sm font-semibold text-stone-700">Preview</p>
-                            <Image src={form.background_image_url} alt="Category preview" width={1200} height={800} className="h-40 w-full rounded-2xl object-cover" />
+                        <ImageUploader
+                            label="Background image"
+                            previewUrl={form.background_image_url}
+                            onImageUpload={handleImageUpload}
+                            isUploading={isUploadingImage}
+                            error={imageError}
+                        />
+                        <div className="mt-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                            <label className="mb-2 block text-sm font-semibold text-stone-800">Or paste an image URL</label>
+                            <input
+                                value={form.background_image_url}
+                                onChange={(event) => {
+                                    setImageError(null);
+                                    setForm({ ...form, background_image_url: event.target.value });
+                                }}
+                                className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3"
+                                placeholder="https://example.com/banner.jpg"
+                            />
+                            <p className="mt-2 text-xs text-stone-500">Upload a file or paste a direct image link from any website.</p>
                         </div>
-                    ) : null}
+                    </div>
                     <div className="md:col-span-2 flex flex-wrap gap-3">
                         <button type="submit" disabled={isSubmitting} className="rounded-full bg-stone-900 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60">
                             {isSubmitting ? 'Saving…' : editingCategoryId ? 'Save changes' : 'Save category'}
@@ -153,7 +197,7 @@ export default function AdminCategoriesPage() {
                     {categories.map((category) => (
                         <div key={category.id} className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-5">
                             {category.background_image_url ? (
-                                <Image src={category.background_image_url} alt={category.name} width={1200} height={800} className="mb-4 h-32 w-full rounded-[1.25rem] object-cover" />
+                                <ResponsiveImage src={category.background_image_url} alt={category.name} width={1200} height={800} className="mb-4 h-32 w-full rounded-[1.25rem] object-cover" />
                             ) : null}
                             <h2 className="text-lg font-semibold text-stone-900">{category.name}</h2>
                             <p className="mt-2 text-sm text-stone-600">{category.description}</p>
