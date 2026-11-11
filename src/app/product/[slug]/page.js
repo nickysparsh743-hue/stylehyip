@@ -3,18 +3,19 @@ import ShareButton from '@/components/shared/ShareButton';
 import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import AddToCartButton from '@/components/store/AddToCartButton';
 import { formatCurrency } from '@/lib/store-data';
-import { getProducts, getProductBySlug } from '@/lib/services/product.service';
+import { getProducts, getProductBySlug, normalizeSlug } from '@/lib/services/product.service';
 
 export async function generateStaticParams() {
-    const products = await getProducts({ limit: 100 });
+    const products = await getProducts();
     return products.map((product) => ({ slug: product.slug }));
 }
 
 export default async function ProductDetailPage({ params }) {
+    const { slug } = await params;
     let product;
 
     try {
-        product = await getProductBySlug(params.slug);
+        product = await getProductBySlug(normalizeSlug(decodeURIComponent(String(slug ?? ''))));
     } catch {
         product = null;
     }
@@ -31,9 +32,12 @@ export default async function ProductDetailPage({ params }) {
         );
     }
 
+    const categoryHref = product.category ? `/categories/${product.category}` : '/shop';
+    const productImage = product.image_url || product.image || '/placeholder-product.jpg';
+
     return (
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
-            <ResponsiveImage src={product.image} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
+            <ResponsiveImage src={productImage} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
             <div className="space-y-6">
                 <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
@@ -42,6 +46,11 @@ export default async function ProductDetailPage({ params }) {
                     </div>
                     <h1 className="text-4xl font-semibold text-stone-900">{product.name}</h1>
                     <p className="text-lg leading-8 text-stone-600">{product.description}</p>
+                    {product.category_name ? (
+                        <p className="text-sm text-stone-600">
+                            Category: <Link href={categoryHref} className="font-semibold text-stone-900 underline-offset-4 hover:underline">{product.category_name}</Link>
+                        </p>
+                    ) : null}
                 </div>
                 <div className="rounded-[1.5rem] border border-stone-200 bg-white p-6 shadow-sm">
                     <div className="flex items-center justify-between">

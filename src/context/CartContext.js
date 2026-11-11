@@ -5,28 +5,40 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 const CartContext = createContext(null);
 
 export function CartProvider({ children }) {
-    const [items, setItems] = useState(() => {
-        if (typeof window === 'undefined') {
-            return [];
-        }
-
-        const saved = window.localStorage.getItem('stylehyip-cart');
-        if (!saved) {
-            return [];
-        }
-
-        try {
-            return JSON.parse(saved);
-        } catch (error) {
-            console.error('Failed to parse cart data', error);
-            return [];
-        }
-    });
+    const [items, setItems] = useState([]);
+    const [isHydrated, setIsHydrated] = useState(false);
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        const hydrateCart = () => {
+            try {
+                const saved = window.localStorage.getItem('stylehyip-cart');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        setItems(parsed);
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to parse cart data', error);
+            } finally {
+                setIsHydrated(true);
+            }
+        };
+
+        queueMicrotask(hydrateCart);
+    }, []);
+
+    useEffect(() => {
+        if (!isHydrated || typeof window === 'undefined') {
+            return;
+        }
+
         window.localStorage.setItem('stylehyip-cart', JSON.stringify(items));
-    }, [items]);
+    }, [items, isHydrated]);
 
     const addToCart = (product, quantity = 1) => {
         setItems((currentItems) => {

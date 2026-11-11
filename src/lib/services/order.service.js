@@ -6,8 +6,53 @@ export async function createOrder({ userId = null, name, phone, address, items =
         throw new Error('Order must contain at least one item.');
     }
 
-    const total = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0);
     const supabase = createSupabaseAdminClient();
+    const productIds = [...new Set(items.map((item) => item.id).filter(Boolean))];
+
+    if (!productIds.length) {
+        throw new Error('Order items are missing product identifiers.');
+    }
+
+    const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('id, price, stock, is_active')
+        .in('id', productIds);
+
+    if (productsError) {
+        throw productsError;
+    }
+
+    if (!products || products.length !== productIds.length) {
+        throw new Error('One or more products could not be verified in the catalog.');
+    }
+
+    const productMap = new Map(products.map((product) => [product.id, product]));
+    let total = 0;
+    const orderItems = items.map((item) => {
+        const product = productMap.get(item.id);
+        if (!product) {
+            throw new Error('A product in the cart could not be found.');
+        }
+
+        const quantity = Number(item.quantity || 0);
+        if (quantity <= 0) {
+            throw new Error('Each order item must have a quantity greater than zero.');
+        }
+
+        const unitPrice = Number(product.price || 0);
+        total += unitPrice * quantity;
+
+        return {
+            product_id: item.id,
+            quantity,
+            unit_price: unitPrice,
+        };
+    });
+
+    const clientTotal = Number(subtotal || 0);
+    if (clientTotal > 0 && total !== clientTotal) {
+        throw new Error('Order total validation failed. Please refresh and try again.');
+    }
 
     const { data: order, error: orderError } = await supabase
         .from('orders')
@@ -16,6 +61,7 @@ export async function createOrder({ userId = null, name, phone, address, items =
             total,
             delivery_address: address,
             phone,
+            status: 'pending',
         })
         .select('*')
         .single();
@@ -24,14 +70,12 @@ export async function createOrder({ userId = null, name, phone, address, items =
         throw orderError || new Error('Unable to create order.');
     }
 
-    const orderItems = items.map((item) => ({
+    const orderItemsToInsert = orderItems.map((item) => ({
         order_id: order.id,
-        product_id: item.id,
-        quantity: item.quantity,
-        unit_price: item.price,
+        ...item,
     }));
 
-    const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+    const { error: itemsError } = await supabase.from('order_items').insert(orderItemsToInsert);
     if (itemsError) {
         throw itemsError;
     }
@@ -43,6 +87,7 @@ export async function createOrder({ userId = null, name, phone, address, items =
         status: 'pending',
         reference: paymentReference,
         amount: total,
+        phone_number: phone,
     });
 
     if (paymentError) {

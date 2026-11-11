@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
 import { buildShareMessage, copyTextToClipboard, createShareUrl, openShareWindow } from '@/lib/share';
+import { FaFacebook, FaWhatsapp, FaCopy } from 'react-icons/fa';
 
 export default function ShareButton({ type, title, slug }) {
     const { push } = useToast();
@@ -66,15 +67,15 @@ export default function ShareButton({ type, title, slug }) {
             {!supportsNativeShare && isOpen ? (
                 <div className="absolute right-0 z-20 mt-2 w-44 rounded-2xl border border-stone-200 bg-white p-2 shadow-lg" role="menu">
                     <button type="button" onClick={handleCopyLink} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-50" role="menuitem">
-                        <span aria-hidden="true">📋</span>
+                        <FaCopy />
                         <span>Copy Link</span>
                     </button>
                     <button type="button" onClick={handleWhatsApp} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-50" role="menuitem">
-                        <span aria-hidden="true">🟢</span>
+                        <FaWhatsapp />
                         <span>WhatsApp</span>
                     </button>
                     <button type="button" onClick={handleFacebook} className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-50" role="menuitem">
-                        <span aria-hidden="true">🔵</span>
+                        <FaFacebook />
                         <span>Facebook</span>
                     </button>
                 </div>

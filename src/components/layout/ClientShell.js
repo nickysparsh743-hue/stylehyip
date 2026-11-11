@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { CartProvider, useCart } from '@/context/CartContext';
 import { AuthProvider, useAuth } from '@/lib/context/AuthContext';
 import { ToastProvider } from '@/components/ui/ToastProvider';
@@ -11,13 +11,15 @@ import { siteConfig } from '@/lib/store-data';
 function NavBar() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const router = useRouter();
     const { itemCount } = useCart();
     const { user, role, signOut } = useAuth();
+    const [searchQuery, setSearchQuery] = useState('');
 
     const links = [
         { href: '/', label: 'Home' },
-        { href: '/products', label: 'Shop' },
-        { href: '/categories/sneakers', label: 'Categories' },
+        { href: '/products', label: 'Products' },
+        { href: '/categories', label: 'Categories' },
         { href: '/about', label: 'About Us' },
     ];
 
@@ -55,9 +57,27 @@ function NavBar() {
                         })}
                     </nav>
                     <div className="flex items-center gap-3">
-                        <Link href="/products" className="hidden rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-700 sm:inline-flex">
-                            Search
-                        </Link>
+                        <form
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                const query = searchQuery.trim();
+                                if (!query) {
+                                    router.push('/products');
+                                    return;
+                                }
+                                router.push(`/search?q=${encodeURIComponent(query)}`);
+                            }}
+                            className="hidden items-center gap-2 rounded-full border border-stone-300 bg-stone-50 px-3 py-2 sm:flex"
+                        >
+                            <input
+                                type="search"
+                                value={searchQuery}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                placeholder="Search products"
+                                className="w-32 bg-transparent text-sm text-stone-700 outline-none placeholder:text-stone-400"
+                            />
+                            <button type="submit" className="text-sm font-semibold text-stone-700">Search</button>
+                        </form>
                         {user ? (
                             <>
                                 <Link href="/profile" className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-700 hover:text-stone-900">
@@ -109,7 +129,7 @@ function Footer() {
                 <div>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-white">Connect</h3>
                     <div className="mt-3 space-y-2 text-sm">
-                        <a href="https://wa.me/254700000000" className="block hover:text-white">WhatsApp</a>
+                        <a href="https://wa.me/25498260281" className="block hover:text-white">WhatsApp</a>
                         <a href="https://instagram.com" className="block hover:text-white">Instagram</a>
                         <a href="https://facebook.com" className="block hover:text-white">Facebook</a>
                     </div>
@@ -133,8 +153,8 @@ export default function ClientShell({ children }) {
                         <div className="sticky bottom-0 z-20 border-t border-stone-200 bg-white px-3 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] sm:hidden">
                             <div className="flex items-center justify-between">
                                 <Link href="/" className="flex flex-1 flex-col items-center text-xs text-stone-600">🏠<span>Home</span></Link>
-                                <Link href="/products" className="flex flex-1 flex-col items-center text-xs text-stone-600">🛍️<span>Shop</span></Link>
-                                <Link href="/categories/sneakers" className="flex flex-1 flex-col items-center text-xs text-stone-600">🗂️<span>Categories</span></Link>
+                                <Link href="/products" className="flex flex-1 flex-col items-center text-xs text-stone-600">🛍️<span>Products</span></Link>
+                                <Link href="/categories" className="flex flex-1 flex-col items-center text-xs text-stone-600">🗂️<span>Categories</span></Link>
                                 <Link href="/cart" className="flex flex-1 flex-col items-center text-xs text-stone-600">🛒<span>Bag</span></Link>
                             </div>
                         </div>

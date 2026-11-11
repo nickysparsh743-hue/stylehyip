@@ -64,6 +64,13 @@ create table if not exists public.payments (
   status text not null default 'pending',
   reference text,
   amount integer not null default 0,
+  checkout_request_id text,
+  merchant_request_id text,
+  mpesa_receipt_number text,
+  phone_number text,
+  transaction_date text,
+  result_code text,
+  result_description text,
   created_at timestamptz default now()
 );
 

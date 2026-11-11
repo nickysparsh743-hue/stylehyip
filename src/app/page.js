@@ -16,8 +16,8 @@ const featureItems = [
 export default async function HomePage() {
   const [categories, featuredProducts, newArrivals] = await Promise.all([
     getCategories(),
-    getProducts({ featured: true, limit: 4 }),
-    getProducts({ limit: 4 }),
+    getProducts({ featured: true, limit: 10 }),
+    getProducts({ limit: 10 }),
   ]);
 
   return (

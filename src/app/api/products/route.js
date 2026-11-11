@@ -26,7 +26,7 @@ export async function GET(request) {
     const category = searchParams.get('category') || '';
     const featured = searchParams.get('featured') === 'true';
 
-    const products = await getProducts({ search, categorySlug: category, featured, limit: 24 });
+    const products = await getProducts({ search, categorySlug: category, featured });
     return NextResponse.json(products);
 }
 

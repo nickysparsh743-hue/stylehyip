@@ -1,15 +1,54 @@
 import { createSupabaseAdminClient } from '../supabase/admin';
 import { createSupabaseServerClient } from '../supabase/server';
 
-export async function getCategories() {
+export function normalizeSlug(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export async function getCategories({ limit = null } = {}) {
   const supabase = createSupabaseAdminClient();
+  let query = supabase.from('categories').select('*').order('created_at', { ascending: false });
+
+  if (limit !== null && limit !== undefined && Number(limit) > 0) {
+    query = query.limit(Number(limit));
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw error;
+  }
+
+  return (data || []).map((category) => ({
+    ...category,
+    slug: normalizeSlug(category.slug),
+    name: String(category.name ?? '').trim(),
+    description: String(category.description ?? '').trim(),
+  }));
+}
+
+export async function getCategoryBySlug(slug) {
+  const supabase = createSupabaseAdminClient();
+  const requestedSlug = normalizeSlug(slug);
+
   const { data, error } = await supabase.from('categories').select('*').order('created_at', { ascending: false });
 
   if (error) {
     throw error;
   }
 
-  return data || [];
+  const category = (data || []).find((item) => normalizeSlug(item.slug) === requestedSlug) || null;
+  return category ? {
+    ...category,
+    slug: normalizeSlug(category.slug),
+    name: String(category.name ?? '').trim(),
+    description: String(category.description ?? '').trim(),
+  } : null;
 }
 
 export async function createCategory(payload = {}) {
