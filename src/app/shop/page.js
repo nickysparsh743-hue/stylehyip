@@ -48,7 +48,7 @@ export default function ShopPage() {
                         From polished staples to statement pieces, discover fashion that fits your day, your plans, and your style.
                     </p>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex max-w-full gap-2 overflow-x-auto pb-2 [scrollbar-width:thin] sm:flex-wrap sm:overflow-visible sm:pb-0">
                     <button type="button" onClick={() => setSelectedCategory('all')} className={`rounded-full px-4 py-2 text-sm font-semibold ${selectedCategory === 'all' ? 'bg-stone-900 text-white' : 'bg-white text-stone-700 border border-stone-200'}`}>
                         All
                     </button>
@@ -63,7 +63,7 @@ export default function ShopPage() {
             {isLoading ? (
                 <div className="rounded-[1.5rem] border border-stone-200 bg-stone-50 p-8 text-sm text-stone-600">Loading products…</div>
             ) : (
-                <div className="grid gap-4 grid-cols-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid min-w-0 grid-cols-3 gap-2 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
                     {filteredProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}

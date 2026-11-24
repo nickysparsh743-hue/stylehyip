@@ -58,7 +58,7 @@ export default async function CategoryPage({ params }) {
                 <h2 className="text-2xl font-semibold text-stone-900">Related products</h2>
             </div>
 
-            <div className="grid gap-4 grid-cols-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid min-w-0 grid-cols-3 gap-2 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
                 {categoryProducts.length > 0 ? (
                     categoryProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />

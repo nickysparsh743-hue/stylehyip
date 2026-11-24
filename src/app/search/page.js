@@ -35,7 +35,7 @@ export default async function SearchPage({ searchParams }) {
                     No products found for “{rawQuery}”.
                 </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid min-w-0 grid-cols-3 gap-2 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
                     {rankedProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}

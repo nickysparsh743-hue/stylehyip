@@ -20,7 +20,7 @@ export default async function CategoriesPage() {
                     No categories found.
                 </div>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div className="grid min-w-0 grid-cols-3 gap-2 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
                     {categories.map((category) => (
                         <CategoryCard key={category.id} category={category} />
                     ))}

@@ -23,43 +23,43 @@ export default async function HomePage() {
   return (
     <div className="bg-white">
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="rounded-[2rem] bg-[#111111] p-8 text-white sm:p-10 lg:p-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-400">New style drop</p>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight sm:text-5xl">{siteConfig.tagline}</h1>
-            <p className="mt-4 max-w-xl text-lg leading-8 text-stone-300">Premium sneakers, handbags, and fashion essentials delivered across Kenya.</p>
-            <div className="mt-8 flex flex-wrap gap-4">
+        <div className="grid gap-5 lg:grid-cols-[1.05fr_0.95fr] lg:gap-8">
+          <div className="rounded-[1.5rem] bg-[#111111] p-6 text-white sm:rounded-[2rem] sm:p-10 lg:p-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400 sm:text-sm">New style drop</p>
+            <h1 className="mt-3 text-3xl font-semibold leading-tight sm:mt-4 sm:text-5xl">{siteConfig.tagline}</h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-stone-300 sm:mt-4 sm:text-lg sm:leading-8">Premium sneakers, handbags, and fashion essentials delivered across Kenya.</p>
+            <div className="mt-6 flex flex-wrap gap-4">
               <Link href="/products" className="rounded-full bg-amber-400 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-300">Shop now</Link>
               <Link href="/products" className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">New arrivals</Link>
             </div>
-            <div className="mt-8 flex gap-3">
+            <div className="mt-6 flex gap-3">
               <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
               <span className="h-2.5 w-2.5 rounded-full bg-white/50" />
               <span className="h-2.5 w-2.5 rounded-full bg-white/50" />
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-[2rem] border border-stone-200 bg-stone-50 p-4 shadow-sm">
-            <ResponsiveImage src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" width={1200} height={900} priority className="h-[420px] w-full rounded-[1.5rem] object-cover" />
+          <div className="overflow-hidden rounded-[1.5rem] border border-stone-200 bg-stone-50 p-2 shadow-sm sm:rounded-[2rem] sm:p-4">
+            <ResponsiveImage src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" alt="Fashion showcase" width={1200} height={900} priority className="h-[260px] w-full rounded-[1rem] object-cover sm:h-[420px] sm:rounded-[1.5rem]" />
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="grid gap-4 md:grid-cols-4">
+      <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4">
           {featureItems.map((item) => (
-            <div key={item.title} className="rounded-[1.25rem] border border-stone-200 bg-stone-50 p-5 shadow-sm">
-              <div className="text-2xl">{item.icon}</div>
-              <div className="mt-3">
-                <strong className="text-stone-900">{item.title}</strong>
-                <p className="mt-1 text-sm leading-6 text-stone-600">{item.text}</p>
+            <div key={item.title} className="rounded-[1rem] border border-stone-200 bg-stone-50 p-3 shadow-sm sm:rounded-[1.25rem] sm:p-5">
+              <div className="text-xl sm:text-2xl">{item.icon}</div>
+              <div className="mt-2 sm:mt-3">
+                <strong className="text-sm text-stone-900 sm:text-base">{item.title}</strong>
+                <p className="mt-1 text-xs leading-5 text-stone-600 sm:text-sm sm:leading-6">{item.text}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">Shop By Category</p>
@@ -69,7 +69,7 @@ export default async function HomePage() {
             View all <span className="ml-1">→</span>
           </Link>
         </div>
-        <div className="grid gap-3 sm:gap-4 grid-cols-4 sm:grid-cols-4 md:grid-cols-5">
+        <div className="grid min-w-0 grid-cols-3 gap-2 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}

@@ -42,8 +42,8 @@ function NavBar() {
                 </div>
             </div>
             <header className="sticky top-0 z-30 border-b border-stone-200/80 bg-white/95 backdrop-blur">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                    <Link href="/" className="text-xl font-semibold tracking-[0.2em] uppercase text-stone-900">
+                <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:px-6 sm:py-4 lg:px-8">
+                    <Link href="/" className="shrink-0 text-base font-semibold tracking-[0.12em] uppercase text-stone-900 sm:text-xl sm:tracking-[0.2em]">
                         Style<span className="text-amber-500">Kicks</span>
                     </Link>
                     <nav className="hidden items-center gap-6 text-sm font-medium text-stone-600 md:flex">
@@ -56,7 +56,7 @@ function NavBar() {
                             );
                         })}
                     </nav>
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-1.5 sm:gap-3">
                         <form
                             onSubmit={(event) => {
                                 event.preventDefault();
@@ -80,19 +80,19 @@ function NavBar() {
                         </form>
                         {user ? (
                             <>
-                                <Link href="/profile" className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-700 hover:text-stone-900">
+                                <Link href="/profile" className="rounded-full border border-stone-300 px-2 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 sm:px-3 sm:py-2 sm:text-sm">
                                     Profile
                                 </Link>
-                                <button type="button" onClick={signOut} className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-black">
+                                <button type="button" onClick={signOut} className="rounded-full bg-amber-400 px-2 py-1.5 text-xs font-semibold text-black sm:px-4 sm:py-2 sm:text-sm">
                                     Sign out
                                 </button>
                             </>
                         ) : (
-                            <Link href="/auth/login" className="rounded-full border border-stone-300 px-3 py-2 text-sm font-semibold text-stone-700 hover:text-stone-900">
+                            <Link href="/auth/login" className="rounded-full border border-stone-300 px-2 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 sm:px-3 sm:py-2 sm:text-sm">
                                 Login
                             </Link>
                         )}
-                        <Link href="/cart" className="rounded-full bg-stone-900 px-4 py-2 text-sm font-semibold text-white">
+                        <Link href="/cart" className="rounded-full bg-stone-900 px-2 py-1.5 text-xs font-semibold text-white sm:px-4 sm:py-2 sm:text-sm">
                             Bag ({itemCount})
                         </Link>
                     </div>
@@ -105,7 +105,7 @@ function NavBar() {
 function Footer() {
     return (
         <footer className="border-t border-stone-200 bg-stone-950 text-stone-300">
-            <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-4 lg:px-8">
+            <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-8 sm:grid-cols-2 sm:px-6 sm:py-10 lg:grid-cols-4 lg:px-8">
                 <div>
                     <p className="text-lg font-semibold text-white">{siteConfig.name}</p>
                     <p className="mt-2 max-w-xl text-sm text-stone-400">{siteConfig.tagline}</p>
@@ -148,9 +148,9 @@ export default function ClientShell({ children }) {
                         <Suspense fallback={null}>
                             <NavBar />
                         </Suspense>
-                        <main className="flex-1">{children}</main>
+                        <main className="flex-1 pb-[68px] sm:pb-0">{children}</main>
                         <Footer />
-                        <div className="sticky bottom-0 z-20 border-t border-stone-200 bg-white px-3 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] sm:hidden">
+                        <div className="fixed bottom-0 left-0 right-0 z-20 border-t border-stone-200 bg-white px-3 py-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)] sm:hidden">
                             <div className="flex items-center justify-between">
                                 <Link href="/" className="flex flex-1 flex-col items-center text-xs text-stone-600">🏠<span>Home</span></Link>
                                 <Link href="/products" className="flex flex-1 flex-col items-center text-xs text-stone-600">🛍️<span>Products</span></Link>

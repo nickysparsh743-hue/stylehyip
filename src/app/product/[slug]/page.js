@@ -37,26 +37,26 @@ export default async function ProductDetailPage({ params }) {
     const productFallbackImage = product.category_image_url || product.image_url || null;
 
     return (
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
-            <ResponsiveImage src={productImage} fallbackSrc={productFallbackImage} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
-            <div className="space-y-6">
+        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 sm:py-16 lg:grid-cols-[1fr_0.9fr] lg:gap-10 lg:px-8">
+            <ResponsiveImage src={productImage} fallbackSrc={productFallbackImage} alt={product.name} width={1200} height={1400} className="h-[320px] w-full rounded-[1.25rem] object-cover sm:h-[480px] sm:rounded-[2rem] lg:h-[520px]" />
+            <div className="space-y-5 sm:space-y-6">
                 <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
                         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">{product.badge}</p>
                         <ShareButton type="product" title={product.name} slug={product.slug} />
                     </div>
-                    <h1 className="text-4xl font-semibold text-stone-900">{product.name}</h1>
-                    <p className="text-lg leading-8 text-stone-600">{product.description}</p>
+                    <h1 className="text-2xl font-semibold text-stone-900 sm:text-4xl">{product.name}</h1>
+                    <p className="text-base leading-7 text-stone-600 sm:text-lg sm:leading-8">{product.description}</p>
                     {product.category_name ? (
                         <p className="text-sm text-stone-600">
                             Category: <Link href={categoryHref} className="font-semibold text-stone-900 underline-offset-4 hover:underline">{product.category_name}</Link>
                         </p>
                     ) : null}
                 </div>
-                <div className="rounded-[1.5rem] border border-stone-200 bg-white p-6 shadow-sm">
-                    <div className="flex items-center justify-between">
-                        <p className="text-sm uppercase tracking-[0.2em] text-stone-500">Price</p>
-                        <p className="text-3xl font-semibold text-stone-900">{formatCurrency(product.price)}</p>
+                <div className="rounded-[1.25rem] border border-stone-200 bg-white p-4 shadow-sm sm:rounded-[1.5rem] sm:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs uppercase tracking-[0.2em] text-stone-500 sm:text-sm">Price</p>
+                        <p className="text-2xl font-semibold text-stone-900 sm:text-3xl">{formatCurrency(product.price)}</p>
                     </div>
                     <p className="mt-4 text-sm text-stone-600">In stock: {product.stock} units</p>
                     <div className="mt-6">
