@@ -10,14 +10,8 @@ function pickMetadataValue(items, key) {
 
 function resolvePaymentStatus(resultCode) {
     const code = Number(resultCode ?? 1);
-    if (code === 0) {
-        return 'paid';
-    }
-
-    if (code === 1032) {
-        return 'cancelled';
-    }
-
+    if (code === 0) return 'successful';
+    if (code === 1032) return 'cancelled';
     return 'failed';
 }
 
@@ -60,22 +54,23 @@ export async function processMpesaCallback(payload) {
         };
     }
 
-    if (payment.status === 'paid') {
-        return {
-            acknowledged: true,
-            duplicate: true,
-            payment,
-            status: 'paid',
-        };
-    }
-
     const itemList = callback.CallbackMetadata?.Item || [];
     const amount = pickMetadataValue(itemList, 'Amount');
     const mpesaReceiptNumber = pickMetadataValue(itemList, 'MpesaReceiptNumber');
     const phoneNumber = pickMetadataValue(itemList, 'PhoneNumber');
     const transactionDate = pickMetadataValue(itemList, 'TransactionDate');
     const nextStatus = resolvePaymentStatus(resultCode);
-    const nextOrderStatus = nextStatus === 'paid' ? 'paid' : 'cancelled';
+    const isSuccessful = nextStatus === 'successful';
+    const nextOrderStatus = isSuccessful ? 'paid' : 'cancelled';
+
+    const callbackAmount = amount !== null && amount !== undefined ? Number(amount) : null;
+    if (callbackAmount !== null && Number(payment.amount) !== callbackAmount) {
+        throw new Error('M-Pesa callback amount does not match the payment attempt.');
+    }
+
+    if (payment.status === 'successful' || payment.status === 'paid') {
+        return { acknowledged: true, duplicate: true, payment, status: 'paid' };
+    }
 
     const { data: updatedPayment, error: updateError } = await supabase
         .from('payments')
@@ -98,9 +93,13 @@ export async function processMpesaCallback(payload) {
         throw updateError;
     }
 
+    const orderUpdate = isSuccessful
+        ? { status: 'processing', payment_status: 'paid', updated_at: new Date().toISOString() }
+        : { payment_status: nextStatus === 'cancelled' ? 'unpaid' : 'failed', updated_at: new Date().toISOString() };
+
     const { error: orderError } = await supabase
         .from('orders')
-        .update({ status: nextOrderStatus })
+        .update(orderUpdate)
         .eq('id', payment.order_id);
 
     if (orderError) {
@@ -110,7 +109,7 @@ export async function processMpesaCallback(payload) {
     return {
         acknowledged: true,
         payment: updatedPayment,
-        status: nextStatus,
-        orderStatus: nextOrderStatus,
+        status: isSuccessful ? 'paid' : nextStatus,
+        orderStatus: isSuccessful ? 'processing' : null,
     };
 }

@@ -33,11 +33,12 @@ export default async function ProductDetailPage({ params }) {
     }
 
     const categoryHref = product.category ? `/categories/${product.category}` : '/shop';
-    const productImage = product.image_url || product.image || '/placeholder-product.jpg';
+    const productImage = product.image_url || product.image || product.category_image_url || '/placeholder-product.jpg';
+    const productFallbackImage = product.category_image_url || product.image_url || null;
 
     return (
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:px-8">
-            <ResponsiveImage src={productImage} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
+            <ResponsiveImage src={productImage} fallbackSrc={productFallbackImage} alt={product.name} width={1200} height={1400} className="h-[480px] w-full rounded-[2rem] object-cover" />
             <div className="space-y-6">
                 <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">

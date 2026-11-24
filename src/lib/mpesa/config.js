@@ -1,9 +1,9 @@
 export function getMpesaConfig() {
     const envName = (process.env.MPESA_ENV || 'sandbox').trim().toLowerCase();
-    const consumerKey = process.env.MPESA_CONSUMER_KEY || process.env.NEXT_PUBLIC_MPESA_CONSUMER_KEY;
-    const consumerSecret = process.env.MPESA_CONSUMER_SECRET || process.env.NEXT_PUBLIC_MPESA_CONSUMER_SECRET;
-    const businessShortCode = process.env.MPESA_SHORTCODE || process.env.NEXT_PUBLIC_MPESA_SHORTCODE;
-    const passkey = process.env.MPESA_PASSKEY || process.env.NEXT_PUBLIC_MPESA_PASSKEY;
+    const consumerKey = process.env.MPESA_CONSUMER_KEY;
+    const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
+    const businessShortCode = process.env.MPESA_SHORTCODE;
+    const passkey = process.env.MPESA_PASSKEY;
     const callbackUrl = process.env.MPESA_CALLBACK_URL || process.env.NEXT_PUBLIC_MPESA_CALLBACK_URL;
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
@@ -28,7 +28,7 @@ export function getMpesaConfig() {
     return {
         env: envName,
         baseUrl,
-        callbackUrl: callbackUrl || `${siteUrl.replace(/\/$/, '')}/api/mpesa/callback`,
+        callbackUrl: callbackUrl || `${siteUrl.replace(/\/$/, '')}/api/payments/mpesa/callback`,
         consumerKey,
         consumerSecret,
         businessShortCode,

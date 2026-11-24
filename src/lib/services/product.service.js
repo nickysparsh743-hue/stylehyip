@@ -11,13 +11,16 @@ export function normalizeSlug(value) {
 }
 
 function mapProduct(product) {
+  const categoryImageUrl = product.categories?.background_image_url || null;
+
   return {
     ...product,
     slug: normalizeSlug(product.slug),
     name: String(product.name ?? '').trim(),
     description: String(product.description ?? '').trim(),
     image_url: product.image_url || null,
-    image: product.image_url || product.image || '/placeholder-product.jpg',
+    category_image_url: categoryImageUrl,
+    image: product.image_url || categoryImageUrl || product.image || '/placeholder-product.jpg',
     badge: product.is_featured ? 'Featured' : 'New',
     rating: 5,
     reviews: 12,
@@ -87,7 +90,7 @@ export async function getProducts({ search = '', categorySlug = '', categoryId =
   const supabase = createSupabaseAdminClient();
   let query = supabase
     .from('products')
-    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug)')
+    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url)')
     .order('created_at', { ascending: false });
 
   if (featured) {
@@ -131,7 +134,7 @@ export async function getProductBySlug(slug) {
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug)')
+    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url)')
     .order('created_at', { ascending: false });
 
   if (error) {

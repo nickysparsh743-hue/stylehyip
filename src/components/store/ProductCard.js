@@ -7,13 +7,14 @@ import AddToCartButton from './AddToCartButton';
 import { formatCurrency } from '@/lib/store-data';
 
 export default function ProductCard({ product }) {
-    const productImage = product.image || '/placeholder-product.jpg';
+    const productImage = product.image_url || product.image || product.category_image_url || '/placeholder-product.jpg';
+    const productFallbackImage = product.category_image_url || product.image_url || null;
 
     return (
         <article className="flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-stone-200 bg-white shadow-sm">
             <div className="relative">
                 <Link href={`/products/${product.slug}`} className="block">
-                    <ResponsiveImage src={productImage} alt={product.name} width={800} height={800} loading="lazy" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="h-44 w-full object-cover sm:h-56" />
+                    <ResponsiveImage src={productImage} fallbackSrc={productFallbackImage} alt={product.name} width={800} height={800} loading="lazy" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="h-44 w-full object-cover sm:h-56" />
                 </Link>
                 <div className="absolute right-3 top-3">
                     <ShareButton type="product" title={product.name} slug={product.slug} />
