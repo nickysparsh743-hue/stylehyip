@@ -30,7 +30,7 @@ export default function CheckoutPage() {
 
         try {
             const whatsappNumber = normalizeWhatsAppNumber(
-                process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '25498260281'
+                process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '254703576876'
             );
 
             const orderLines = items.map((item, index) => {
