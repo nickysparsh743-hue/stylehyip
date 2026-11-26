@@ -18,6 +18,9 @@ export async function POST(request) {
         if (order.payment_status === 'paid') {
             return NextResponse.json({ error: 'This order has already been paid.' }, { status: 409 });
         }
+        if (order.status === 'cancelled' || (order.expires_at && new Date(order.expires_at).getTime() <= Date.now())) {
+            return NextResponse.json({ error: 'This order has expired or been cancelled. Please create a new order.' }, { status: 409 });
+        }
 
         const supabase = createSupabaseAdminClient();
         const amount = Number(order.total);
@@ -48,6 +51,9 @@ export async function POST(request) {
             updated_at: new Date().toISOString(),
         }).eq('id', order.id);
 
+        const { error: reserveError } = await supabase.rpc('reserve_order_stock', { p_order_id: order.id });
+        if (reserveError) return NextResponse.json({ error: reserveError.message || 'Insufficient stock for this order.' }, { status: 409 });
+
         let paymentResult;
         try {
             paymentResult = await initiateMpesaStkPush({
@@ -71,6 +77,8 @@ export async function POST(request) {
                 payment_status: 'failed',
                 updated_at: new Date().toISOString(),
             }).eq('id', order.id);
+
+            await supabase.rpc('release_order_stock', { p_order_id: order.id, p_reason: 'STK Push initiation failed; reservation released' });
 
             return NextResponse.json({
                 success: false,

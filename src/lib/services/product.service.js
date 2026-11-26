@@ -11,6 +11,8 @@ export function normalizeSlug(value) {
 }
 
 function mapProduct(product) {
+  const inventory = Array.isArray(product.inventory) ? product.inventory[0] : product.inventory;
+  const authoritativeStock = inventory?.stock ?? product.stock ?? 0;
   const categoryImageUrl = product.categories?.background_image_url || null;
 
   return {
@@ -24,7 +26,7 @@ function mapProduct(product) {
     badge: product.is_featured ? 'Featured' : 'New',
     rating: 5,
     reviews: 12,
-    stock: product.stock ?? 0,
+    stock: authoritativeStock,
     category: product.categories?.slug || null,
     category_name: product.categories?.name || null,
   };
@@ -90,7 +92,7 @@ export async function getProducts({ search = '', categorySlug = '', categoryId =
   const supabase = createSupabaseAdminClient();
   let query = supabase
     .from('products')
-    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url)')
+    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url), inventory(stock)')
     .order('created_at', { ascending: false });
 
   if (featured) {
@@ -134,7 +136,7 @@ export async function getProductBySlug(slug) {
 
   const { data, error } = await supabase
     .from('products')
-    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url)')
+    .select('id, slug, name, description, price, stock, image_url, is_featured, created_at, category_id, categories(name, slug, background_image_url), inventory(stock)')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -151,23 +153,39 @@ export async function getProductBySlug(slug) {
 
 export async function createProduct(payload) {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('products').insert(payload).select('*').single();
-
-  if (error) {
-    throw error;
+  const admin = createSupabaseAdminClient();
+  const { stock = 0, lowStockThreshold = 5, sku = '', ...productPayload } = payload;
+  const initialStock = Number(stock);
+  const threshold = Number(lowStockThreshold);
+  if (!Number.isInteger(initialStock) || initialStock < 0) throw new Error('Initial stock must be a non-negative integer.');
+  const { data, error } = await supabase.from('products').insert({ ...productPayload, stock: 0 }).select('*').single();
+  if (error) throw error;
+  const { error: inventoryError } = await admin.from('inventory').upsert({ product_id: data.id, stock: initialStock, low_stock_threshold: threshold, sku: sku || null, updated_at: new Date().toISOString() }, { onConflict: 'product_id' });
+  if (inventoryError) throw inventoryError;
+  if (initialStock > 0) {
+    await admin.from('inventory_movements').insert({ product_id: data.id, movement_type: 'stock_received', quantity: initialStock, previous_stock: 0, new_stock: initialStock, reason: 'Initial product inventory' });
   }
-
   return data;
 }
 
 export async function updateProduct(id, payload) {
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.from('products').update(payload).eq('id', id).select('*').single();
-
-  if (error) {
-    throw error;
+  const admin = createSupabaseAdminClient();
+  const { stock, lowStockThreshold, sku, ...productPayload } = payload;
+  const { data, error } = await supabase.from('products').update(productPayload).eq('id', id).select('*').single();
+  if (error) throw error;
+  if (stock !== undefined || lowStockThreshold !== undefined || sku !== undefined) {
+    const { data: current } = await admin.from('inventory').select('*').eq('product_id', id).maybeSingle();
+    const nextStock = stock === undefined ? Number(current?.stock || 0) : Number(stock);
+    const nextThreshold = lowStockThreshold === undefined ? Number(current?.low_stock_threshold ?? 5) : Number(lowStockThreshold);
+    if (!Number.isInteger(nextStock) || nextStock < 0) throw new Error('Stock must be a non-negative integer.');
+    if (!Number.isInteger(nextThreshold) || nextThreshold < 0) throw new Error('Threshold must be a non-negative integer.');
+    await admin.from('inventory').update({ low_stock_threshold: nextThreshold, sku: sku || current?.sku || null, updated_at: new Date().toISOString() }).eq('product_id', id);
+    if (stock !== undefined && nextStock !== Number(current?.stock || 0)) {
+      const { error: adjustError } = await admin.rpc('manual_inventory_adjust', { p_product_id: id, p_operation: 'adjust', p_quantity: nextStock, p_reason: 'Product inventory edited', p_reference: null, p_performed_by: null });
+      if (adjustError) throw adjustError;
+    }
   }
-
   return data;
 }
 

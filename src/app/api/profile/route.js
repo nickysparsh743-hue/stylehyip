@@ -13,6 +13,11 @@ export async function DELETE() {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { data: profile } = await supabase.from('profiles').select('account_status').eq('id', user.id).maybeSingle();
+    if (profile?.account_status === 'blocked' || profile?.account_status === 'banned') {
+        return NextResponse.json({ error: 'Account access is restricted.' }, { status: 403 });
+    }
+
     const deleteProfile = await supabase.from('profiles').delete().eq('id', user.id);
     if (deleteProfile.error) {
         return NextResponse.json({ error: deleteProfile.error.message || 'Unable to delete profile data.' }, { status: 500 });

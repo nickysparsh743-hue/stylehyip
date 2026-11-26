@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
 import ImageUploader from '@/components/ui/ImageUploader';
 import { uploadProductImage, deleteStorageFile, getStorageFilePathFromUrl } from '@/lib/supabase/storage';
@@ -12,6 +12,8 @@ const emptyForm = {
     description: '',
     price: '0',
     stock: '0',
+    lowStockThreshold: '5',
+    sku: '',
     category_id: '',
     image_url: '',
     is_featured: false,
@@ -28,6 +30,7 @@ export default function AdminProductsPage() {
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [imageError, setImageError] = useState(null);
     const [oldImagePath, setOldImagePath] = useState(null);
+    const editFormRef = useRef(null);
 
     async function loadData() {
         const [productsResponse, categoriesResponse] = await Promise.all([
@@ -68,12 +71,19 @@ export default function AdminProductsPage() {
             slug: product.slug || '',
             description: product.description || '',
             price: String(product.price ?? 0),
-            stock: String(product.stock ?? 0),
+            stock: String(product.stock ?? product.inventory?.stock ?? 0),
+            lowStockThreshold: String(product.inventory?.low_stock_threshold ?? 5),
+            sku: product.inventory?.sku || '',
             category_id: product.category_id || '',
             image_url: product.image_url || '',
             is_featured: Boolean(product.is_featured),
         });
         setOldImagePath(product.image_url ? getStorageFilePathFromUrl(product.image_url) : null);
+
+        window.requestAnimationFrame(() => {
+            editFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            editFormRef.current?.querySelector('input')?.focus({ preventScroll: true });
+        });
     }
 
     async function handleImageUpload(file) {
@@ -113,6 +123,8 @@ export default function AdminProductsPage() {
                 ...form,
                 price: Number(form.price),
                 stock: Number(form.stock),
+                lowStockThreshold: Number(form.lowStockThreshold),
+                sku: form.sku,
                 is_featured: Boolean(form.is_featured),
             };
 
@@ -180,11 +192,13 @@ export default function AdminProductsPage() {
 
             <div className="mt-8 rounded-[2rem] border border-stone-200 bg-white p-8 shadow-sm">
                 <h2 className="text-xl font-semibold text-stone-900">{editingProductId ? 'Edit product' : 'Create product'}</h2>
-                <form onSubmit={onSubmit} className="mt-6 grid gap-4 md:grid-cols-2">
+                <form onSubmit={onSubmit} className="mt-6 grid gap-4 md:grid-cols-2" ref={editFormRef}>
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Product name" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Slug" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Price" type="number" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Stock" type="number" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} required />
+                    <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="SKU (optional)" value={form.sku} onChange={(event) => setForm({ ...form, sku: event.target.value })} />
+                    <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Low-stock threshold" type="number" min="0" value={form.lowStockThreshold} onChange={(event) => setForm({ ...form, lowStockThreshold: event.target.value })} required />
                     <div className="md:col-span-2">
                         <ImageUploader
                             label="Product image"

@@ -91,6 +91,13 @@ export function AuthProvider({ children }) {
 
         setUser(data.user);
         const nextProfile = await loadProfile(data.user.id, data.user.user_metadata?.role);
+        if (nextProfile?.account_status === 'blocked' || nextProfile?.account_status === 'banned') {
+            await supabase.auth.signOut();
+            setUser(null);
+            setProfile(null);
+            setRole(null);
+            return { data, error: new Error(nextProfile.account_status === 'banned' ? 'This account has been banned.' : 'This account is currently blocked.'), profile: nextProfile };
+        }
         return { data, error, profile: nextProfile };
     }, [loadProfile, supabase]);
 

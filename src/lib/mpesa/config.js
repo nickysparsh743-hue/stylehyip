@@ -25,10 +25,20 @@ export function getMpesaConfig() {
 
     const baseUrl = envName === 'production' ? 'https://api.safaricom.co.ke' : 'https://sandbox.safaricom.co.ke';
 
+    const resolvedCallbackUrl = callbackUrl || `${siteUrl.replace(/\/$/, '')}/api/payments/mpesa/callback`;
+    let callbackIsValid = false;
+    try {
+        const callback = new URL(resolvedCallbackUrl);
+        callbackIsValid = callback.protocol === 'https:' || (envName !== 'production' && callback.protocol === 'http:');
+    } catch {
+        callbackIsValid = false;
+    }
+    if (!callbackIsValid) throw new Error('MPESA_CALLBACK_URL must be a valid public callback URL using HTTPS in production.');
+
     return {
         env: envName,
         baseUrl,
-        callbackUrl: callbackUrl || `${siteUrl.replace(/\/$/, '')}/api/payments/mpesa/callback`,
+        callbackUrl: resolvedCallbackUrl,
         consumerKey,
         consumerSecret,
         businessShortCode,

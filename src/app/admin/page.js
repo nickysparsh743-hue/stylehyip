@@ -1,11 +1,16 @@
 import Link from 'next/link';
 
 const cards = [
+    { title: 'Customers', href: '/admin/users' },
+    { title: 'Customer Requests', href: '/admin/customer-requests' },
+    { title: 'Invitations', href: '/admin/invitations' },
+    { title: 'Administrators', href: '/admin/administrators' },
+    { title: 'Account Activity Logs', href: '/admin/activity' },
     { title: 'Products', href: '/admin/products' },
     { title: 'Categories', href: '/admin/categories' },
     { title: 'Orders', href: '/admin/orders' },
-    { title: 'Customers', href: '/admin/users' },
     { title: 'Settings', href: '/admin/settings' },
+    { title: 'Inventory', href: '/admin/inventory' },
 ];
 
 export default function AdminDashboardPage() {

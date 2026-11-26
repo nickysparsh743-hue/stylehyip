@@ -9,7 +9,7 @@ import { uploadProductImage } from '@/lib/supabase/storage';
 export default function NewProductPage() {
     const { push } = useToast();
     const [categories, setCategories] = useState([]);
-    const [form, setForm] = useState({ name: '', slug: '', description: '', price: '0', stock: '0', category_id: '', image_url: '', is_featured: false });
+    const [form, setForm] = useState({ name: '', slug: '', description: '', price: '0', stock: '0', lowStockThreshold: '5', sku: '', category_id: '', image_url: '', is_featured: false });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [imageError, setImageError] = useState(null);
@@ -52,6 +52,8 @@ export default function NewProductPage() {
                     ...form,
                     price: Number(form.price),
                     stock: Number(form.stock),
+                    lowStockThreshold: Number(form.lowStockThreshold),
+                    sku: form.sku,
                     is_featured: Boolean(form.is_featured),
                 }),
             });
@@ -80,6 +82,8 @@ export default function NewProductPage() {
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Slug" value={form.slug} onChange={(event) => setForm({ ...form, slug: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Price" type="number" value={form.price} onChange={(event) => setForm({ ...form, price: event.target.value })} required />
                     <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Stock" type="number" value={form.stock} onChange={(event) => setForm({ ...form, stock: event.target.value })} required />
+                    <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="Low-stock threshold" type="number" min="0" value={form.lowStockThreshold} onChange={(event) => setForm({ ...form, lowStockThreshold: event.target.value })} required />
+                    <input className="w-full rounded-2xl border border-stone-300 px-4 py-3" placeholder="SKU (optional)" value={form.sku} onChange={(event) => setForm({ ...form, sku: event.target.value })} />
                     <div className="space-y-3">
                         <ImageUploader
                             label="Product image"

@@ -92,3 +92,23 @@ export function getStorageFilePathFromUrl(publicUrl) {
     const match = publicUrl.match(/\/storage\/v1\/object\/public\/product-images\/(.+)$/);
     return match ? match[1] : null;
 }
+
+export async function uploadSiteSettingsImage(file, kind) {
+    await validateImageFile(file);
+
+    const fileName = `${generateUUID()}.${getFileExtension(file)}`;
+    const filePath = `settings/${kind}-${fileName}`;
+
+    const { error } = await supabaseBrowser.storage.from(BUCKET_NAME).upload(filePath, file);
+
+    if (error) {
+        throw new Error(`Upload failed: ${error.message}`);
+    }
+
+    const { data: publicUrlData } = supabaseBrowser.storage.from(BUCKET_NAME).getPublicUrl(filePath);
+    without
+    return {
+        path: filePath,
+        publicUrl: publicUrlData.publicUrl,
+    };
+}

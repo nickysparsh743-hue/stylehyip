@@ -44,6 +44,7 @@ function LoginForm() {
             <div className="rounded-[2rem] border border-stone-200 bg-white p-8 shadow-sm">
                 <h1 className="text-3xl font-semibold text-stone-900">Login</h1>
                 <p className="mt-3 text-sm text-stone-600">Sign in with your email and password.</p>
+                {searchParams.get('restricted') === '1' ? <p className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">Your account access is currently restricted. Contact the store team for assistance.</p> : null}
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
                     <div>
                         <label className="mb-2 block text-sm font-semibold text-stone-800">Email</label>
@@ -62,7 +63,7 @@ function LoginForm() {
                 <p className="mt-6 text-sm text-stone-600">
                     Need access?{' '}
                     <Link href="/auth/signup" className="font-semibold text-black hover:text-stone-700">
-                        Contact the store team
+                        Don&apos;t have an account? Request an Account
                     </Link>
                 </p>
             </div>

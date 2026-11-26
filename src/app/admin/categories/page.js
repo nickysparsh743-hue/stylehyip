@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/components/ui/ToastProvider';
 import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import ImageUploader from '@/components/ui/ImageUploader';
@@ -23,6 +23,7 @@ export default function AdminCategoriesPage() {
     const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [imageError, setImageError] = useState(null);
     const [oldImagePath, setOldImagePath] = useState(null);
+    const editFormRef = useRef(null);
 
     async function loadCategories() {
         const response = await fetch('/api/categories');
@@ -57,6 +58,11 @@ export default function AdminCategoriesPage() {
             background_image_url: category.background_image_url || '',
         });
         setOldImagePath(category.background_image_url ? getStorageFilePathFromUrl(category.background_image_url) : null);
+
+        window.requestAnimationFrame(() => {
+            editFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            editFormRef.current?.querySelector('input')?.focus({ preventScroll: true });
+        });
     }
 
     async function handleImageUpload(file) {
@@ -146,7 +152,7 @@ export default function AdminCategoriesPage() {
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-500">Admin</p>
                 <h1 className="mt-2 text-3xl font-semibold text-stone-900">Categories</h1>
 
-                <form onSubmit={onSubmit} className="mt-8 grid gap-4 rounded-[1.5rem] border border-stone-200 bg-stone-50 p-6 md:grid-cols-2">
+                <form onSubmit={onSubmit} className="mt-8 grid gap-4 rounded-[1.5rem] border border-stone-200 bg-stone-50 p-6 md:grid-cols-2" ref={editFormRef}>
                     <div>
                         <label className="mb-2 block text-sm font-semibold text-stone-800">Name</label>
                         <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} required className="w-full rounded-2xl border border-stone-300 bg-white px-4 py-3" />

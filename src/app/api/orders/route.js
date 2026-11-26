@@ -15,7 +15,7 @@ export async function GET() {
     const { data, error } = await supabase
         .from('orders')
         .select(
-            `id,status,total,delivery_address,phone,created_at,order_items(id,quantity,unit_price,product:products(id,name,slug,image_url))`
+            `id,order_reference,status,payment_status,total,delivery_address,phone,customer_name,created_at,expires_at,cancellation_reason,paid_at,order_items(id,product_name,quantity,unit_price,subtotal,product:products(id,name,slug,image_url)),payments(id,status,payment_method,reference,mpesa_receipt_number,amount,created_at)`
         )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });

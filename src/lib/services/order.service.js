@@ -110,6 +110,12 @@ export async function createOrder({
         throw itemsError;
     }
 
+    const { error: reservationError } = await supabase.rpc('reserve_order_stock', { p_order_id: order.id });
+    if (reservationError) {
+        await supabase.from('orders').delete().eq('id', order.id);
+        throw new Error(reservationError.message || 'Stock could not be reserved.');
+    }
+
     return { order, total, duplicate: false };
 }
 

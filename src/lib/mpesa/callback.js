@@ -106,6 +106,14 @@ export async function processMpesaCallback(payload) {
         throw orderError;
     }
 
+    if (isSuccessful) {
+        const { error: inventoryError } = await supabase.rpc('finalize_order_stock', { p_order_id: payment.order_id });
+        if (inventoryError) throw inventoryError;
+    } else {
+        const { error: inventoryError } = await supabase.rpc('release_order_stock', { p_order_id: payment.order_id, p_reason: 'Payment failed or cancelled; reservation released' });
+        if (inventoryError) throw inventoryError;
+    }
+
     return {
         acknowledged: true,
         payment: updatedPayment,

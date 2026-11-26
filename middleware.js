@@ -53,6 +53,16 @@ export async function middleware(request) {
         return NextResponse.redirect(loginUrl);
     }
 
+    if (isProtectedRoute && user) {
+        const { data: profile } = await supabase.from('profiles').select('role, account_status, account_status_until').eq('id', user.id).maybeSingle();
+        const status = profile?.account_status || 'active';
+        const expired = status === 'blocked' && profile?.account_status_until && new Date(profile.account_status_until).getTime() <= Date.now();
+        if ((status === 'blocked' || status === 'banned') && !expired) {
+            if (pathname.startsWith('/api/')) return NextResponse.json({ error: 'Account access is restricted.' }, { status: 403 });
+            return NextResponse.redirect(new URL('/auth/login?restricted=1', request.url));
+        }
+    }
+
     if (isAdminRoute && user) {
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
         if (profile?.role !== 'admin') {

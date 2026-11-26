@@ -44,11 +44,14 @@ export function CartProvider({ children }) {
         setItems((currentItems) => {
             const existingItem = currentItems.find((item) => item.id === product.id);
             if (existingItem) {
+                const nextQuantity = Math.min(existingItem.quantity + quantity, Number(product.stock || 0));
                 return currentItems.map((item) =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
+                    item.id === product.id ? { ...item, quantity: Math.max(0, nextQuantity) } : item
                 );
             }
-            return [...currentItems, { ...product, quantity }];
+            const initialQuantity = Math.min(quantity, Number(product.stock || 0));
+            if (initialQuantity <= 0) return currentItems;
+            return [...currentItems, { ...product, quantity: initialQuantity }];
         });
     };
 
@@ -58,7 +61,7 @@ export function CartProvider({ children }) {
                 return currentItems.filter((item) => item.id !== productId);
             }
             return currentItems.map((item) =>
-                item.id === productId ? { ...item, quantity } : item
+                item.id === productId ? { ...item, quantity: Math.min(quantity, Number(item.stock || 0)) } : item
             );
         });
     };
